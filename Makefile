@@ -40,8 +40,8 @@ release: build
 debug: XCODE_CONFIG=Debug
 debug: build
 build:
-	$(if $(wildcard .git), git submodule update --init, \
-            $(if $(wildcard libs/SMCKit/README.md), , $(call bad-archive)))
+	# $(if $(wildcard .git), git submodule update --init, \
+  #           $(if $(wildcard libs/SMCKit/README.md), , $(call bad-archive)))
 	xcodebuild -configuration ${XCODE_CONFIG} build
 	mkdir -p bin
 	cp build/${XCODE_CONFIG}/dshb bin

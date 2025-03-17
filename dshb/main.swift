@@ -116,10 +116,10 @@ curs_set(0)                 // Set cursor to invisible
 start_color()
 init_pair(Int16(WidgetUIColor.background.rawValue), Int16(COLOR_WHITE),
                                                     Int16(use_default_colors()))
-init_pair(Int16(WidgetUIColor.title.rawValue), Int16(COLOR_WHITE),
+init_pair(Int16(WidgetUIColor.title.rawValue), Int16(COLOR_BLACK),
                                                Int16(COLOR_CYAN))
 init_pair(Int16(WidgetUIColor.warningLevelCool.rawValue), Int16(COLOR_BLACK),
-                                                          Int16(COLOR_BLUE))
+                                                          Int16(COLOR_MAGENTA))
 init_pair(Int16(WidgetUIColor.warningLevelNominal.rawValue), Int16(COLOR_BLACK),
                                                              Int16(COLOR_GREEN))
 init_pair(Int16(WidgetUIColor.warningLevelDanger.rawValue), Int16(COLOR_BLACK),
@@ -187,8 +187,8 @@ if #available(OSX 10.10, *) {
 let source = DispatchSource.makeTimerSource(flags: DispatchSource.TimerFlags(rawValue: 0),
                                             queue: queue)
 
-source.scheduleRepeating(deadline: .now(),
-                         interval: Double(updateFrequency),
+source.schedule(deadline: .now(),
+                         repeating: Double(updateFrequency),
                          leeway: .seconds(0))
 
 source.setEventHandler {

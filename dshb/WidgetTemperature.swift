@@ -31,8 +31,9 @@ struct WidgetTemperature: WidgetType {
     var title: WidgetUITitle
     var stats = [WidgetUIStat]()
 
-    let maxValue = 128.0
-    fileprivate let sensors: [TemperatureSensor]
+    let maxValue = 105.0
+    fileprivate var sensors: [TemperatureSensor]
+    fileprivate let all_sensors: [TemperatureSensor]
     
     init(window: Window = Window()) {
         title = WidgetUITitle(name: name, window: window)
@@ -42,16 +43,26 @@ struct WidgetTemperature: WidgetType {
             // TODO: Add battery temperature from SystemKit? SMC will usually
             //       have a key for it too (though not always certain which one)
             let allKnownSensors = try SMCKit.allKnownTemperatureSensors().sorted
-                                                           { $0.name < $1.name }
+                                                           { $0.order > $1.order }
 
             let allUnknownSensors: [TemperatureSensor]
             if CLIUnknownTemperatureSensorsOption.wasSet {
                 allUnknownSensors = try SMCKit.allUnknownTemperatureSensors()
             } else { allUnknownSensors = [ ] }
 
-            sensors = allKnownSensors + allUnknownSensors
+            all_sensors = allKnownSensors + allUnknownSensors
+          
+            // Remove sensors with start of ENCLOSURE
+            sensors = allUnknownSensors
+            for sensor in all_sensors {
+              if sensor.name.starts(with: "ENCLOSURE") {
+                continue
+              }
+              sensors.append(sensor)
+            }
         } catch {
             // TODO: Have some sort of warning message under temperature widget
+            all_sensors = [ ]
             sensors = [ ]
         }
 
@@ -73,8 +84,8 @@ struct WidgetTemperature: WidgetType {
             //if stats[i].window.point.y >= LINES - 2 { break }
 
             do {
-                let value = try SMCKit.temperature(sensors[index].code)
-                stats[index].draw(String(value), percentage: value / maxValue)
+              let value = try SMCKit.temperature(sensors[index].code)
+              stats[index].draw(String(value), percentage: Double(value) / maxValue)
             } catch {
                 stats[index].draw("Error", percentage: 0)
                 // TODO: stats[i].unit = .None

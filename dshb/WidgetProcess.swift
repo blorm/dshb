@@ -102,8 +102,8 @@ private func processString(_ tokens: [String], length: Int) -> String {
     let pidSpace = 6
     let userSpace = 16
 
-    let pidCount  = tokens[0].characters.count
-    let userCount = tokens[1].characters.count
+    let pidCount  = tokens[0].count
+    let userCount = tokens[1].count
 
     var pidSpaceString  = String()
     var userSpaceString = String()

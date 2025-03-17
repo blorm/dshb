@@ -37,18 +37,20 @@ enum Unit: String {
     case Percentage = "%"
     case Megabyte = "MB"
     case MilliampereHour = " mAh"
+    case Milliampere = " mA"
     case None = ""
     case RPM = " RPM"
+    case Watt = " W"
 }
 
 
 struct WidgetUIStat {
     
-    let name: String
+    var name: String
 
     var unit: Unit {
         didSet {
-            unitCount = unit.rawValue.characters.count
+            unitCount = unit.rawValue.count
         }
     }
 
@@ -71,15 +73,15 @@ struct WidgetUIStat {
         self.maxValue = max
         self.window = window
 
-        nameCount = name.characters.count
-        unitCount = unit.rawValue.characters.count
+        nameCount = name.count
+        unitCount = unit.rawValue.count
     }
 
     mutating func draw(_ str: String, percentage: Double) {
         lastStr = str
         lastPercentage = percentage
 
-        let spaceCount = window.length - nameCount - str.characters.count - unitCount
+        let spaceCount = window.length - nameCount - str.count - unitCount
         let space = String(repeating: " ", count: max(spaceCount, 2))
 
 
@@ -94,7 +96,7 @@ struct WidgetUIStat {
         if percentage.sign == .minus {
             charactersToColorCount = window.length
         } else {
-            charactersToColorCount = Int(Double(window.length) * percentage)
+            charactersToColorCount = Int(Double(window.length) * min(1.0, percentage))
         }
 
         let fullStr = (shortenedName + space + str + unit.rawValue) as NSString

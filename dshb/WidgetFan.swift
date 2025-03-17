@@ -38,14 +38,13 @@ struct WidgetFan: WidgetType {
         let fanCount: Int
         do    { fanCount = try SMCKit.fanCount() }
         catch { fanCount = 0 }
-
-
+      
         for index in 0..<fanCount {
             // Not sorting fan names, most will not have more than 2 anyway
-            let fanName: String
+            var fanName: String
             do    { fanName = try SMCKit.fanName(index) }
             catch { fanName = "Fan \(index)" }
-
+            fanName = fanName + " auto "
 
             let fanMaxSpeed: Int
             do {
@@ -64,8 +63,10 @@ struct WidgetFan: WidgetType {
         for index in 0..<stats.count {
             do {
                 let fanSpeed = try SMCKit.fanCurrentSpeed(index)
+                let fanMode = try SMCKit.fanMode(index)
+                stats[index].name = "Fan \(index) \(fanMode)"
                 stats[index].draw(String(fanSpeed),
-                              percentage: Double(fanSpeed) / stats[index].maxValue)
+                                  percentage: Double(fanSpeed) / stats[index].maxValue)
             } catch {
                 stats[index].draw("Error", percentage: 0)
             }
